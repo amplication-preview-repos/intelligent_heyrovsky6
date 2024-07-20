@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Company {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String?
+  address   String?
+  shops     Shop[]
+  salesmen  Salesman[]
+}
+
+model Shop {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  name         String?
+  location     String?
+  company      Company?      @relation(fields: [companyId], references: [id])
+  companyId    String?
+  visitRecords VisitRecord[]
+}
+
+model Salesman {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  email        String?
+  name         String?
+  company      Company?      @relation(fields: [companyId], references: [id])
+  companyId    String?
+  visitRecords VisitRecord[]
+}
+
+model VisitRecord {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  timestamp  DateTime?
+  photo      Json?
+  location   String?
+  salesman   Salesman? @relation(fields: [salesmanId], references: [id])
+  salesmanId String?
+  shop       Shop?     @relation(fields: [shopId], references: [id])
+  shopId     String?
+}
